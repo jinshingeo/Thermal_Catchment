@@ -110,7 +110,7 @@ for ax, xvar, xlabel, slope, intercept, r_val, p_val in [
 
 fig.suptitle(
     'Plan A 회귀분석: 공간환경 변수 → Thermal Catchment 감소율\n'
-    f'(성동구 7개 역, α={0.15}, 30분 시간예산)',
+    f'(성동구 7개 역, α={0.15}, 15분 시간예산)',
     fontsize=12, fontweight='bold'
 )
 plt.tight_layout()
