@@ -62,31 +62,31 @@
   },
   "응봉역": {
     "line": "경의중앙선",
-    "lat": 37.5427,
-    "lon": 127.0357,
+    "lat": 37.552,
+    "lon": 127.0353,
     "h07": {
-      "classic_nodes": 2529,
-      "thermal_nodes": 1155,
-      "lost_nodes": 1374,
-      "reduction_pct": 54.3
+      "classic_nodes": 3850,
+      "thermal_nodes": 2273,
+      "lost_nodes": 1577,
+      "reduction_pct": 41.0
     },
     "h10": {
-      "classic_nodes": 2529,
-      "thermal_nodes": 1113,
-      "lost_nodes": 1416,
-      "reduction_pct": 56.0
+      "classic_nodes": 3850,
+      "thermal_nodes": 2143,
+      "lost_nodes": 1707,
+      "reduction_pct": 44.3
     },
     "h13": {
-      "classic_nodes": 2529,
-      "thermal_nodes": 916,
-      "lost_nodes": 1613,
-      "reduction_pct": 63.8
+      "classic_nodes": 3850,
+      "thermal_nodes": 1845,
+      "lost_nodes": 2005,
+      "reduction_pct": 52.1
     },
     "h16": {
-      "classic_nodes": 2529,
-      "thermal_nodes": 919,
-      "lost_nodes": 1610,
-      "reduction_pct": 63.7
+      "classic_nodes": 3850,
+      "thermal_nodes": 1851,
+      "lost_nodes": 1999,
+      "reduction_pct": 51.9
     }
   },
   "뚝섬역": {
