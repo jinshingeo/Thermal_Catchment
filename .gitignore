@@ -1,0 +1,34 @@
+# 대용량 데이터 파일
+*.graphml
+*.gpkg
+*.shp
+*.shx
+*.dbf
+*.prj
+*.cpg
+*.geojson
+*.img
+*.zip
+
+# 대용량 CSV (링크별 UTCI 등)
+link_utci_by_hour*.csv
+sdot_utci*.csv
+*_OBS_ASOS_*.csv
+
+# 캐시
+cache/
+__pycache__/
+*.pyc
+*.pyo
+
+# Jupyter 체크포인트
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 환경
+.env
+venv/
+*.egg-info/
