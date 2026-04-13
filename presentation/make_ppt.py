@@ -114,10 +114,10 @@ add_rect(sl, 0.5, 1.6, 5.0,  0.06, fill=C_BLUE)
 
 # 메인 타이틀
 add_text(sl,
-    "열환경을 반영한 보행 접근성 분석",
+    "열환경을 반영한 보행 접근권역 분석",
     0.7, 1.7, 11.5, 1.1, size=36, bold=True, color=C_WHITE)
 add_text(sl,
-    "Space-Time Prism 기반 Thermal Catchment 모델",
+    "Thermal Catchment 고도화: UTCI 기반 링크 회피 모델",
     0.7, 2.7, 11.5, 0.7, size=22, color=RGBColor(0x90, 0xCA, 0xF9))
 add_text(sl,
     "— 서울 성동구 7개 지하철역을 중심으로 —",
@@ -166,7 +166,7 @@ bullet(sl, [
 add_rect(sl, 0.4, 6.1, 12.5, 1.05, fill=RGBColor(0xE3, 0xF2, 0xFD))
 add_rect(sl, 0.4, 6.1, 0.12, 1.05, fill=C_BLUE)
 add_text(sl,
-    '연구 질문:  "폭염 시 더운 길을 피해 걸으면, 지하철역까지의 도보 접근 범위는 얼마나 줄어드는가?"',
+    '연구 질문:  "폭염 시 더운 길을 회피하면, 지하철역까지의 15분 도달 가능 범위(Catchment)는 얼마나 줄어드는가?"',
     0.65, 6.2, 12.1, 0.8, size=15, bold=True, color=C_NAVY, align=PP_ALIGN.CENTER)
 
 
@@ -179,10 +179,10 @@ slide_header(sl, "선행연구 및 본 연구의 위치")
 
 # 3개 카드
 cards = [
-    (C_NAVY,   "STP / PPA",
-     ["Hägerstrand (1970): Space-Time Prism 개념 원전",
-      "Miller (1991): GIS 기반 네트워크 PPA",
-      "Moreno et al. (2021): 15분 도시 → 시간예산 15분"]),
+    (C_NAVY,   "Catchment / 접근권역",
+     ["15분 도시 (Moreno et al. 2021): 시간예산 기준",
+      "Dijkstra 기반 도달 범위 = Catchment",
+      "기존 연구: 거리·시간만 고려 (열환경 無)"]),
     (C_BLUE,   "UTCI & 열환경",
      ["Bröde et al. (2012): UTCI 국제 표준 카테고리",
       "Oke (1987): 도시 협곡 SVF 공식",
@@ -190,7 +190,7 @@ cards = [
     (C_GREEN,  "선행 유사 연구",
      ["Colaninno et al. (2024): SOLWEIG + LiDAR",
       "→ 보도 세그먼트 열위험 평가 (뉴욕)",
-      "본 연구: 합성 DSM + STP 접근성"]),
+      "본 연구: 합성 DSM + Catchment 고도화"]),
 ]
 for i, (col, title, items) in enumerate(cards):
     x0 = 0.4 + i * 4.3
@@ -207,7 +207,7 @@ for i, (col, title, items) in enumerate(cards):
 add_rect(sl, 0.4, 6.55, 12.5, 0.8, fill=RGBColor(0xE8, 0xF5, 0xE9))
 add_rect(sl, 0.4, 6.55, 0.12, 0.8, fill=C_GREEN)
 add_text(sl,
-    "본 연구: LiDAR 없는 환경에서 건물 폴리곤 기반 합성 DSM + Space-Time Prism으로 열환경 보행 접근성 정량화",
+    "본 연구: 기존 Catchment에 열환경(UTCI) 제약을 추가한 Thermal Catchment 고도화 → 향후 STP로 확장 예정",
     0.65, 6.65, 12.1, 0.6, size=13, bold=True, color=C_NAVY, align=PP_ALIGN.CENTER)
 
 
@@ -228,7 +228,7 @@ steps = [
     (C_GREEN,  "④ 링크 회피",
      "UTCI ≥ 38°C 링크 제거\n(Bröde et al. 2012)\nHard-cut 모델"),
     (C_ORANGE, "⑤ Thermal Catchment",
-     "Dijkstra 15분 도달 범위\nClassic vs Thermal PPA\n접근성 감소율 산출"),
+     "Dijkstra 15분 도달 범위\nClassic vs Thermal 비교\n역별 감소율 산출"),
 ]
 
 for i, (col, title, desc) in enumerate(steps):
@@ -559,16 +559,16 @@ add_rect(sl, 0.4, 1.4, 5.8, 5.5, fill=C_WHITE)
 add_rect(sl, 0.4, 1.4, 0.12, 5.5, fill=C_RED)
 add_text(sl, "연구의 한계", 0.65, 1.5, 5.3, 0.4, size=15, bold=True, color=C_RED)
 limits = [
+    "역 기준 Catchment의 한계",
+    "  개인 이동 기점·목적지 미반영",
+    "  실제 경로 선택 행동 단순화",
     "합성 DSM의 정확도 제한",
     "  LiDAR 미확보 → 층수×3m 추정",
-    "  지붕 형태·지형 고려 불가",
     "단일 기상 지점 입력",
-    "  성동구 전체에 균일한 기상 적용",
+    "  성동구 전체 균일 기상 적용",
     "  미기후 공간 변동성 과소 추정",
     "역 7개로 통계적 검정력 제한",
     "  회귀 결과는 탐색적 수준",
-    "보행자 행동 단순화",
-    "  실제 경로 선택 반영 못함",
 ]
 for i, item in enumerate(limits):
     indent = item.startswith("  ")
@@ -577,26 +577,32 @@ for i, item in enumerate(limits):
              5.2, 0.4, size=12 if indent else 13,
              color=RGBColor(0x75,0x75,0x75) if indent else C_GRAY)
 
-# 향후
+# 향후 — STP 확장 강조
 add_rect(sl, 6.7, 1.4, 6.2, 5.5, fill=C_WHITE)
 add_rect(sl, 6.7, 1.4, 0.12, 5.5, fill=C_BLUE)
 add_text(sl, "향후 연구 방향", 6.95, 1.5, 5.7, 0.4, size=15, bold=True, color=C_BLUE)
+
+# STP 확장 강조 박스
+add_rect(sl, 6.82, 2.0, 5.95, 1.5, fill=RGBColor(0xE3,0xF2,0xFD))
+add_rect(sl, 6.82, 2.0, 0.1, 1.5, fill=C_BLUE)
+add_text(sl, "★  Space-Time Prism(STP)으로 확장",
+         7.05, 2.08, 5.6, 0.45, size=13, bold=True, color=C_NAVY)
+add_text(sl, "개인 이동 기점·목적지 + 시간예산 동시 반영\n→ 폭염의 시공간 이동 제약을 개인 단위로 정량화",
+         7.05, 2.52, 5.6, 0.85, size=12, color=C_GRAY)
+
 futures = [
     "LiDAR 기반 정밀 DSM 확보",
-    "  → MRT·UTCI 공간 정확도 향상",
+    "  → UTCI 공간 정확도 향상",
     "다중 기상 관측 포인트 적용",
-    "  → 성동구 미기후 공간 변동 반영",
-    "취약 집단(고령자) 이동 데이터",
-    "  → 실제 보행 패턴과 비교 검증",
+    "  → 미기후 공간 변동 반영",
     "서울시 전역으로 확장",
     "  → 자치구별 열 취약성 비교",
-    "적응 대책 효과 시뮬레이션",
-    "  → 그늘막·가로수 설치 효과 정량화",
+    "그늘막·가로수 설치 효과 시뮬레이션",
 ]
 for i, item in enumerate(futures):
     indent = item.startswith("  ")
     add_text(sl, ("▪ " if not indent else "") + item.strip(),
-             6.95 + (0.25 if indent else 0), 2.0 + i*0.43,
+             6.95 + (0.25 if indent else 0), 3.65 + i*0.43,
              5.7, 0.4, size=12 if indent else 13,
              color=RGBColor(0x75,0x75,0x75) if indent else C_GRAY)
 
