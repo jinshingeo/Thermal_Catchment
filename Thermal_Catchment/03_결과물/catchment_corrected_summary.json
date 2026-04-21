@@ -1,0 +1,223 @@
+{
+  "model": "svf_corrected_hard_cut",
+  "threshold_utci": 38.0,
+  "time_budget_min": 15,
+  "walk_speed_kmh": 4.5,
+  "왕십리역": {
+    "line": "2호선/수분당/중앙",
+    "h07": {
+      "classic_nodes": 1470,
+      "thermal_nodes": 1470,
+      "lost_count": 0,
+      "reduction_pct": 0.0,
+      "hot_edges_removed": 0
+    },
+    "h10": {
+      "classic_nodes": 1470,
+      "thermal_nodes": 1454,
+      "lost_count": 16,
+      "reduction_pct": 1.1,
+      "hot_edges_removed": 45
+    },
+    "h13": {
+      "classic_nodes": 1470,
+      "thermal_nodes": 548,
+      "lost_count": 922,
+      "reduction_pct": 62.7,
+      "hot_edges_removed": 2531
+    },
+    "h16": {
+      "classic_nodes": 1470,
+      "thermal_nodes": 588,
+      "lost_count": 882,
+      "reduction_pct": 60.0,
+      "hot_edges_removed": 2496
+    }
+  },
+  "행당역": {
+    "line": "5호선",
+    "h07": {
+      "classic_nodes": 1123,
+      "thermal_nodes": 1123,
+      "lost_count": 0,
+      "reduction_pct": 0.0,
+      "hot_edges_removed": 0
+    },
+    "h10": {
+      "classic_nodes": 1123,
+      "thermal_nodes": 1077,
+      "lost_count": 46,
+      "reduction_pct": 4.1,
+      "hot_edges_removed": 45
+    },
+    "h13": {
+      "classic_nodes": 1123,
+      "thermal_nodes": 648,
+      "lost_count": 475,
+      "reduction_pct": 42.3,
+      "hot_edges_removed": 2531
+    },
+    "h16": {
+      "classic_nodes": 1123,
+      "thermal_nodes": 664,
+      "lost_count": 459,
+      "reduction_pct": 40.9,
+      "hot_edges_removed": 2496
+    }
+  },
+  "응봉역": {
+    "line": "경의중앙선",
+    "h07": {
+      "classic_nodes": 891,
+      "thermal_nodes": 891,
+      "lost_count": 0,
+      "reduction_pct": 0.0,
+      "hot_edges_removed": 0
+    },
+    "h10": {
+      "classic_nodes": 891,
+      "thermal_nodes": 682,
+      "lost_count": 209,
+      "reduction_pct": 23.5,
+      "hot_edges_removed": 45
+    },
+    "h13": {
+      "classic_nodes": 891,
+      "thermal_nodes": 228,
+      "lost_count": 663,
+      "reduction_pct": 74.4,
+      "hot_edges_removed": 2531
+    },
+    "h16": {
+      "classic_nodes": 891,
+      "thermal_nodes": 266,
+      "lost_count": 625,
+      "reduction_pct": 70.1,
+      "hot_edges_removed": 2496
+    }
+  },
+  "뚝섬역": {
+    "line": "2호선",
+    "h07": {
+      "classic_nodes": 753,
+      "thermal_nodes": 753,
+      "lost_count": 0,
+      "reduction_pct": 0.0,
+      "hot_edges_removed": 0
+    },
+    "h10": {
+      "classic_nodes": 753,
+      "thermal_nodes": 753,
+      "lost_count": 0,
+      "reduction_pct": 0.0,
+      "hot_edges_removed": 45
+    },
+    "h13": {
+      "classic_nodes": 753,
+      "thermal_nodes": 275,
+      "lost_count": 478,
+      "reduction_pct": 63.5,
+      "hot_edges_removed": 2531
+    },
+    "h16": {
+      "classic_nodes": 753,
+      "thermal_nodes": 241,
+      "lost_count": 512,
+      "reduction_pct": 68.0,
+      "hot_edges_removed": 2496
+    }
+  },
+  "성수역": {
+    "line": "2호선",
+    "h07": {
+      "classic_nodes": 644,
+      "thermal_nodes": 644,
+      "lost_count": 0,
+      "reduction_pct": 0.0,
+      "hot_edges_removed": 0
+    },
+    "h10": {
+      "classic_nodes": 644,
+      "thermal_nodes": 644,
+      "lost_count": 0,
+      "reduction_pct": 0.0,
+      "hot_edges_removed": 45
+    },
+    "h13": {
+      "classic_nodes": 644,
+      "thermal_nodes": 502,
+      "lost_count": 142,
+      "reduction_pct": 22.0,
+      "hot_edges_removed": 2531
+    },
+    "h16": {
+      "classic_nodes": 644,
+      "thermal_nodes": 415,
+      "lost_count": 229,
+      "reduction_pct": 35.6,
+      "hot_edges_removed": 2496
+    }
+  },
+  "서울숲역": {
+    "line": "수인분당선",
+    "h07": {
+      "classic_nodes": 736,
+      "thermal_nodes": 736,
+      "lost_count": 0,
+      "reduction_pct": 0.0,
+      "hot_edges_removed": 0
+    },
+    "h10": {
+      "classic_nodes": 736,
+      "thermal_nodes": 736,
+      "lost_count": 0,
+      "reduction_pct": 0.0,
+      "hot_edges_removed": 45
+    },
+    "h13": {
+      "classic_nodes": 736,
+      "thermal_nodes": 156,
+      "lost_count": 580,
+      "reduction_pct": 78.8,
+      "hot_edges_removed": 2531
+    },
+    "h16": {
+      "classic_nodes": 736,
+      "thermal_nodes": 131,
+      "lost_count": 605,
+      "reduction_pct": 82.2,
+      "hot_edges_removed": 2496
+    }
+  },
+  "옥수역": {
+    "line": "3호선/중앙선",
+    "h07": {
+      "classic_nodes": 205,
+      "thermal_nodes": 205,
+      "lost_count": 0,
+      "reduction_pct": 0.0,
+      "hot_edges_removed": 0
+    },
+    "h10": {
+      "classic_nodes": 205,
+      "thermal_nodes": 205,
+      "lost_count": 0,
+      "reduction_pct": 0.0,
+      "hot_edges_removed": 45
+    },
+    "h13": {
+      "classic_nodes": 205,
+      "thermal_nodes": 142,
+      "lost_count": 63,
+      "reduction_pct": 30.7,
+      "hot_edges_removed": 2531
+    },
+    "h16": {
+      "classic_nodes": 205,
+      "thermal_nodes": 93,
+      "lost_count": 112,
+      "reduction_pct": 54.6,
+      "hot_edges_removed": 2496
+    }
+  }
+}
