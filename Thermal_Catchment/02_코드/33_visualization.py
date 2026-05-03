@@ -1,13 +1,12 @@
 """
-Task 5 — 시각화
-================
-Classic / Thermal 접근성 비교, TARR, AAL, 분류 지도 생성
-
+Task 5 — 시각화 (3개 시간대: 폭염 전·중간·피크)
+=================================================
 출력 (→ 03_결과물/figures/):
-  fig1_accessibility_comparison.png   — Classic vs Thermal A_i 비교
-  fig2_tarr_map.png                   — TARR (%) 공간 분포
-  fig3_aal_map.png                    — AAL 공간 분포
-  fig4_category_map.png               — Thermal-robust / moderate / prone 분류
+  fig1_accessibility_comparison.png   — Classic + Thermal 3시간대 A_i 비교 (1×4)
+  fig2_tarr_multihour.png             — TARR 3시간대 비교 (1×3)
+  fig3_aal_multihour.png              — AAL 3시간대 비교 (1×3)
+  fig4_category_map.png               — Thermal-robust/prone 분류 (14시 피크 기준)
+  fig9_catchment_summary_bar.png      — 시간대별 평균 도달 정류장·완전차단 집계구 요약
 """
 
 import os
@@ -19,7 +18,6 @@ import matplotlib.patches as mpatches
 import matplotlib.font_manager as fm
 import contextily as ctx
 from matplotlib.colors import Normalize
-from matplotlib.colorbar import ColorbarBase
 
 BASE     = os.path.dirname(os.path.abspath(__file__))
 PROJ_DIR = os.path.dirname(BASE)
@@ -28,58 +26,46 @@ FIG_DIR  = os.path.join(RES_DIR, 'figures')
 DATA_DIR = os.path.join(PROJ_DIR, '01_데이터')
 os.makedirs(FIG_DIR, exist_ok=True)
 
-BOUNDARY_SHP   = os.path.join(DATA_DIR, '행정경계',
-                              '통계지역경계(2016년+기준)', '집계구.shp')
-RESULTS_PATH   = os.path.join(RES_DIR, 'gravity_results_30min.csv')
+BOUNDARY_SHP     = os.path.join(DATA_DIR, '행정경계',
+                                '통계지역경계(2016년+기준)', '집계구.shp')
+RESULTS_PATH     = os.path.join(RES_DIR, 'gravity_results_multihour.csv')
+SUMMARY_PATH     = os.path.join(RES_DIR, 'catchment_summary_multihour.csv')
 SEONGDONG_PREFIX = '1104'
 
-# ── 한국어 폰트 설정 ──────────────────────────────────────────────────────
+TARGET_HOURS = {10: '폭염 전\n(10시)', 13: '폭염 중간\n(13시)', 14: '폭염 피크\n(14시)'}
+
+
+# ── 한국어 폰트 ───────────────────────────────────────────────────────────
 def set_korean_font():
-    candidates = [
-        '/System/Library/Fonts/Supplemental/AppleGothic.ttf',
-        '/Library/Fonts/NanumGothic.ttf',
-        '/usr/share/fonts/truetype/nanum/NanumGothic.ttf',
-    ]
-    for path in candidates:
+    for path in ['/System/Library/Fonts/Supplemental/AppleGothic.ttf',
+                 '/Library/Fonts/NanumGothic.ttf']:
         if os.path.exists(path):
             fm.fontManager.addfont(path)
-            prop = fm.FontProperties(fname=path)
-            plt.rcParams['font.family'] = prop.get_name()
+            plt.rcParams['font.family'] = fm.FontProperties(fname=path).get_name()
             break
     plt.rcParams['axes.unicode_minus'] = False
 
 set_korean_font()
 
 
-# ── 1. 데이터 로드 ────────────────────────────────────────────────────────
+# ── 1. 데이터 로드 & 공간 조인 ────────────────────────────────────────────
 print("데이터 로드 중...")
 results_df = pd.read_csv(RESULTS_PATH, encoding='utf-8-sig')
 results_df['집계구코드'] = results_df['집계구코드'].astype(float).astype(int).astype(str)
 
 jibgaegu = gpd.read_file(BOUNDARY_SHP, encoding='cp949')
-code_col = None
-for c in jibgaegu.columns:
-    sample = str(jibgaegu[c].iloc[0])
-    if sample.startswith('11') and len(sample) >= 10:
-        code_col = c
-        break
-if code_col is None:
-    for candidate in ['집계구코드', 'TOT_REG_CD']:
-        if candidate in jibgaegu.columns:
-            code_col = candidate
-            break
-
+code_col  = next(c for c in jibgaegu.columns
+                 if str(jibgaegu[c].iloc[0]).startswith('11') and len(str(jibgaegu[c].iloc[0])) >= 10)
 jibgaegu[code_col] = jibgaegu[code_col].astype(str)
-seongdong_gdf = jibgaegu[jibgaegu[code_col].str.startswith(SEONGDONG_PREFIX)].copy()
-if seongdong_gdf.crs is None:
-    seongdong_gdf = seongdong_gdf.set_crs(epsg=5179)
-seongdong_gdf = seongdong_gdf.to_crs(epsg=3857)
+seongdong = jibgaegu[jibgaegu[code_col].str.startswith(SEONGDONG_PREFIX)].copy()
+if seongdong.crs is None:
+    seongdong = seongdong.set_crs(epsg=5179)
+seongdong = seongdong.to_crs(epsg=3857)
 
-gdf = seongdong_gdf.merge(results_df, left_on=code_col, right_on='집계구코드', how='left')
+gdf = seongdong.merge(results_df, left_on=code_col, right_on='집계구코드', how='left')
 print(f"  병합 완료: {len(gdf)}개 집계구")
 
 
-# ── 공통 헬퍼 ─────────────────────────────────────────────────────────────
 def add_basemap(ax):
     try:
         ctx.add_basemap(ax, source=ctx.providers.CartoDB.Positron, zoom=13)
@@ -93,85 +79,79 @@ def save_fig(fig, fname):
     print(f"  저장: {path}")
 
 
-# ── Fig 1: Classic vs Thermal 접근성 비교 ────────────────────────────────
-print("\nFig 1: Classic vs Thermal 접근성 비교...")
-fig, axes = plt.subplots(1, 2, figsize=(16, 7))
+# ── Fig 1: Classic + Thermal 3시간대 A_i 비교 (1×4) ─────────────────────
+print("\nFig 1: 접근성 비교 (1×4)...")
+fig, axes = plt.subplots(1, 4, figsize=(22, 7))
 
-vmin = gdf[['a_classic', 'a_thermal']].min().min()
-vmax = gdf['a_classic'].max()
+cols   = ['a_classic'] + [f'a_thermal_h{h}' for h in TARGET_HOURS]
+titles = ['Classic\n(기준)'] + list(TARGET_HOURS.values())
+vmax   = gdf['a_classic'].quantile(0.98)
 
-for ax, col, title in zip(axes,
-                           ['a_classic', 'a_thermal'],
-                           ['Classic Catchment\n접근성 (A_i)', 'Thermal Catchment\n접근성 (A_i)']):
-    gdf.plot(column=col, ax=ax, cmap='YlOrRd', vmin=vmin, vmax=vmax,
-             linewidth=0.2, edgecolor='grey')
+for ax, col, title in zip(axes, cols, titles):
+    gdf.plot(column=col, ax=ax, cmap='YlOrRd', vmin=0, vmax=vmax,
+             linewidth=0.15, edgecolor='#aaaaaa', missing_kwds={'color': '#eeeeee'})
     add_basemap(ax)
-    ax.set_title(title, fontsize=13, fontweight='bold', pad=10)
+    ax.set_title(title, fontsize=12, fontweight='bold', pad=8)
     ax.axis('off')
 
-sm = plt.cm.ScalarMappable(cmap='YlOrRd', norm=Normalize(vmin=vmin, vmax=vmax))
+sm = plt.cm.ScalarMappable(cmap='YlOrRd', norm=Normalize(vmin=0, vmax=vmax))
 sm.set_array([])
-cbar = fig.colorbar(sm, ax=axes, shrink=0.6, pad=0.02)
-cbar.set_label('접근성 지수 (A_i)', fontsize=11)
-
-fig.suptitle('폭염 전후 대중교통 보행 접근성 비교 — 성동구 (13시, UTCI ≥ 38°C)',
+fig.colorbar(sm, ax=axes, shrink=0.55, pad=0.01, label='접근성 지수 (A_i)')
+fig.suptitle('폭염 진행에 따른 대중교통 보행 접근성 변화 — 성동구',
              fontsize=14, fontweight='bold', y=1.01)
 save_fig(fig, 'fig1_accessibility_comparison.png')
 
 
-# ── Fig 2: TARR 분포 지도 ────────────────────────────────────────────────
-print("Fig 2: TARR 분포...")
-fig, ax = plt.subplots(figsize=(9, 8))
+# ── Fig 2: TARR 3시간대 비교 ─────────────────────────────────────────────
+print("Fig 2: TARR 비교...")
+fig, axes = plt.subplots(1, 3, figsize=(18, 7))
 
-gdf_valid = gdf[gdf['a_classic'] > 0]
-gdf_noac  = gdf[gdf['a_classic'] == 0]
-
-gdf_valid.plot(column='tarr', ax=ax, cmap='RdYlGn_r',
-               vmin=0, vmax=100, linewidth=0.2, edgecolor='grey')
-if len(gdf_noac) > 0:
-    gdf_noac.plot(ax=ax, color='#cccccc', linewidth=0.2, edgecolor='grey')
-
-add_basemap(ax)
-ax.set_title('Thermal Accessibility Reduction Rate (TARR)\n성동구 집계구별 접근성 감소율 (%)',
-             fontsize=12, fontweight='bold', pad=10)
-ax.axis('off')
+for ax, (hour, label) in zip(axes, TARGET_HOURS.items()):
+    col   = f'tarr_h{hour}'
+    valid = gdf[gdf['a_classic'] > 0]
+    noac  = gdf[gdf['a_classic'] == 0]
+    valid.plot(column=col, ax=ax, cmap='RdYlGn_r', vmin=0, vmax=100,
+               linewidth=0.15, edgecolor='#aaaaaa')
+    if len(noac) > 0:
+        noac.plot(ax=ax, color='#cccccc', linewidth=0.15, edgecolor='#aaaaaa')
+    add_basemap(ax)
+    mean_tarr = valid[col].mean()
+    ax.set_title(f'{label}\n평균 TARR {mean_tarr:.1f}%', fontsize=11, fontweight='bold', pad=8)
+    ax.axis('off')
 
 sm = plt.cm.ScalarMappable(cmap='RdYlGn_r', norm=Normalize(vmin=0, vmax=100))
 sm.set_array([])
-cbar = fig.colorbar(sm, ax=ax, shrink=0.7, pad=0.02)
-cbar.set_label('TARR (%)', fontsize=11)
-if len(gdf_noac) > 0:
-    patch = mpatches.Patch(color='#cccccc', label='Classic 접근 불가')
-    ax.legend(handles=[patch], loc='lower right', fontsize=9)
-
-save_fig(fig, 'fig2_tarr_map.png')
+fig.colorbar(sm, ax=axes, shrink=0.6, pad=0.01, label='TARR (%)')
+fig.suptitle('Thermal Accessibility Reduction Rate (TARR) — 시간대별 비교',
+             fontsize=13, fontweight='bold', y=1.01)
+save_fig(fig, 'fig2_tarr_multihour.png')
 
 
-# ── Fig 3: AAL 분포 지도 ─────────────────────────────────────────────────
-print("Fig 3: AAL 분포...")
-fig, ax = plt.subplots(figsize=(9, 8))
+# ── Fig 3: AAL 3시간대 비교 ──────────────────────────────────────────────
+print("Fig 3: AAL 비교...")
+fig, axes = plt.subplots(1, 3, figsize=(18, 7))
 
-gdf.plot(column='aal', ax=ax, cmap='Purples',
-         vmin=0, vmax=gdf['aal'].quantile(0.95),
-         linewidth=0.2, edgecolor='grey')
-add_basemap(ax)
-ax.set_title('Absolute Accessibility Loss (AAL)\n성동구 집계구별 접근성 절대 손실량',
-             fontsize=12, fontweight='bold', pad=10)
-ax.axis('off')
+vmax_aal = gdf[[f'aal_h{h}' for h in TARGET_HOURS]].quantile(0.97).max()
 
-sm = plt.cm.ScalarMappable(cmap='Purples',
-                            norm=Normalize(vmin=0, vmax=gdf['aal'].quantile(0.95)))
+for ax, (hour, label) in zip(axes, TARGET_HOURS.items()):
+    col = f'aal_h{hour}'
+    gdf.plot(column=col, ax=ax, cmap='Purples', vmin=0, vmax=vmax_aal,
+             linewidth=0.15, edgecolor='#aaaaaa', missing_kwds={'color': '#eeeeee'})
+    add_basemap(ax)
+    mean_aal = gdf[col].mean()
+    ax.set_title(f'{label}\n평균 AAL {mean_aal:.1f}', fontsize=11, fontweight='bold', pad=8)
+    ax.axis('off')
+
+sm = plt.cm.ScalarMappable(cmap='Purples', norm=Normalize(vmin=0, vmax=vmax_aal))
 sm.set_array([])
-cbar = fig.colorbar(sm, ax=ax, shrink=0.7, pad=0.02)
-cbar.set_label('AAL (A_i 단위)', fontsize=11)
+fig.colorbar(sm, ax=axes, shrink=0.6, pad=0.01, label='AAL (A_i 단위)')
+fig.suptitle('Absolute Accessibility Loss (AAL) — 시간대별 비교',
+             fontsize=13, fontweight='bold', y=1.01)
+save_fig(fig, 'fig3_aal_multihour.png')
 
-save_fig(fig, 'fig3_aal_map.png')
 
-
-# ── Fig 4: 분류 지도 ─────────────────────────────────────────────────────
-print("Fig 4: Thermal-robust / moderate / prone 분류...")
-fig, ax = plt.subplots(figsize=(9, 8))
-
+# ── Fig 4: 분류 지도 (14시 피크 기준) ────────────────────────────────────
+print("Fig 4: 분류 지도 (폭염 피크 14시)...")
 color_map = {
     'thermal_robust': '#2166ac',
     'moderate':       '#f7f7f7',
@@ -185,24 +165,64 @@ label_map = {
     'no_access':      'Classic 접근 불가',
 }
 
+fig, ax = plt.subplots(figsize=(9, 8))
 for cat, color in color_map.items():
     sub = gdf[gdf['category'] == cat]
     if len(sub) > 0:
         sub.plot(ax=ax, color=color, linewidth=0.2, edgecolor='grey')
-
 add_basemap(ax)
-ax.set_title('Thermal-robust / Thermal-prone 분류\n성동구 집계구 (TARR 3분위 기준)',
+ax.set_title('Thermal-robust / Thermal-prone 분류\n(폭염 피크 14시 TARR 기준, 3분위)',
              fontsize=12, fontweight='bold', pad=10)
 ax.axis('off')
-
 patches = [mpatches.Patch(color=c, label=label_map[k])
            for k, c in color_map.items() if k in gdf['category'].values]
 ax.legend(handles=patches, loc='lower right', fontsize=9, framealpha=0.9)
-
 save_fig(fig, 'fig4_category_map.png')
 
 
-# ── 완료 ─────────────────────────────────────────────────────────────────
+# ── Fig 9: 시간대별 요약 막대 그래프 ─────────────────────────────────────
+print("Fig 9: 시간대별 요약 막대 그래프...")
+summary_df = pd.read_csv(SUMMARY_PATH, encoding='utf-8-sig')
+
+labels      = ['Classic', '폭염 전\n(10시)', '폭염 중간\n(13시)', '폭염 피크\n(14시)']
+mean_stops  = [
+    summary_df['n_classic_stops'].mean(),
+    summary_df['n_thermal_h10'].mean(),
+    summary_df['n_thermal_h13'].mean(),
+    summary_df['n_thermal_h14'].mean(),
+]
+blocked_cnt = [
+    (summary_df['n_classic_stops'] == 0).sum(),
+    (summary_df['n_thermal_h10'] == 0).sum(),
+    (summary_df['n_thermal_h13'] == 0).sum(),
+    (summary_df['n_thermal_h14'] == 0).sum(),
+]
+colors = ['#4393c3', '#74c476', '#fd8d3c', '#d73027']
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 5))
+
+bars = ax1.bar(labels, mean_stops, color=colors, edgecolor='white', linewidth=0.8)
+for bar, val in zip(bars, mean_stops):
+    ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 1,
+             f'{val:.1f}', ha='center', va='bottom', fontsize=10, fontweight='bold')
+ax1.set_ylabel('평균 도달 정류장 수 (개)', fontsize=11)
+ax1.set_title('시간대별 평균 도달 정류장 수', fontsize=12, fontweight='bold')
+ax1.set_ylim(0, max(mean_stops) * 1.15)
+ax1.grid(axis='y', alpha=0.3)
+
+bars2 = ax2.bar(labels, blocked_cnt, color=colors, edgecolor='white', linewidth=0.8)
+for bar, val in zip(bars2, blocked_cnt):
+    pct = val / len(summary_df) * 100
+    ax2.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 1,
+             f'{val}개\n({pct:.1f}%)', ha='center', va='bottom', fontsize=9, fontweight='bold')
+ax2.set_ylabel('정류장 0개 집계구 수 (완전 차단)', fontsize=11)
+ax2.set_title('시간대별 완전 차단 집계구 수', fontsize=12, fontweight='bold')
+ax2.set_ylim(0, max(blocked_cnt) * 1.2)
+ax2.grid(axis='y', alpha=0.3)
+
+fig.suptitle('폭염 진행에 따른 대중교통 접근성 변화 — 성동구 570개 집계구',
+             fontsize=13, fontweight='bold')
+plt.tight_layout()
+save_fig(fig, 'fig9_catchment_summary_bar.png')
+
 print("\n=== Task 5 완료 ===")
-print(f"  저장 위치: {FIG_DIR}")
-print("다음 단계: Task 6 문서화 & 커밋")

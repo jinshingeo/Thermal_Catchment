@@ -25,6 +25,7 @@ Thermal_Catchment/03_결과물/2sfca_results.csv
 Thermal_Catchment/03_결과물/link_utci_solweig.csv
 Thermal_Catchment/03_결과물/catchment_classic_30min.json
 Thermal_Catchment/03_결과물/catchment_thermal_30min.json
+Thermal_Catchment/03_결과물/catchment_thermal_h*.json
 
 # 캐시
 cache/
