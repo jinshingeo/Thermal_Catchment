@@ -2,25 +2,36 @@
 SOLWEIG 기반 링크별 UTCI 계산 (Open-Meteo 기상 입력)
 =====================================================
 참고문헌:
-  Lindberg et al. (2008)   — SOLWEIG 원전 (복사플럭스 기반 MRT 계산)
-  Lindberg et al. (2018)   — UMEP (합성 DSM → SVF 활용)
-  Bröde et al. (2012)      — UTCI 계산 절차 및 카테고리
-  Chen & Ng (2012)         — 수목 캐노피 UTCI 감소 효과
+  Lindberg & Grimmond (2011) — SOLWEIG MRT 표준 공식 (SVF 기반 복사 가중)
+  Thorsson et al. (2007)     — 옥외 MRT 추정 방법론 비교
+  Höppe (1992)               — 인체 투영면적계수 fp=0.308 (서 있는 사람)
+  Fanger (1970)              — 인체 단파 흡수율 α_k=0.70
+  ISO 7726 (1998)            — 인체 장파 방사율 ε_p=0.97
+  Brutsaert (1975)           — 대기 장파 하향 복사 추정식
+  Erbs et al. (1982)         — 전천일사 → 직산 분리 모델
+  Bröde et al. (2012)        — UTCI 계산 절차 및 카테고리
+  Chen & Ng (2012)           — 수목 캐노피 UTCI 감소 효과
+  Oke (1987)                 — 도시 표면 방사율 및 열 특성
 
-MRT 계산 방법론 (Lindberg et al. 2008 단순화):
-  낮:  MRT = Tair + Δ_sun × SVF
-       Δ_sun = 0.5 × √(GHI × max(cos_z, 0))   [태양고도·일사량 연동]
-  야간: MRT = Tair - 2.0 × SVF                  [개활지 복사냉각 효과]
+MRT 계산 방법론 (표준 공식, Lindberg & Grimmond 2011; Thorsson et al. 2007):
 
-  · SVF=1 (개활지): 태양복사 최대 노출 → MRT 가장 높음
-  · SVF=0 (협곡):  태양복사 차단       → MRT ≈ Tair
-  · 근거: Lindberg & Grimmond (2011) — 서울형 여름 조건 피크 Δ_MRT≈14-16°C
+  (MRT + 273.15)^4 = (α_k × K_abs + L_mean) / (ε_p × σ)
 
-입력 기상: Open-Meteo archive (2025-07-28 ~ 2025-08-03, 7일 시간대별 평균)
-           → 기존 S-DoT/ASOS v3 분석과 동일 기간 매칭
+  K_abs  = K_dir × fp  +  K_dif × SVF × 0.5         [인체 흡수 단파]
+  L_mean = L_sky × SVF  +  L_wall × (1 − SVF)        [SVF 가중 장파]
+  L_sky  = ε_sky × σ × Tair_K^4   (Brutsaert 1975)  [대기 장파]
+  L_wall = ε_w × σ × T_wall_K^4   (Oke 1987)        [도시 표면 장파]
 
+  물리 상수:
+    α_k  = 0.70   인체 단파 흡수율 (Fanger 1970)
+    ε_p  = 0.97   인체 장파 방사율 (ISO 7726)
+    fp   = 0.308  투영면적계수, 서 있는 사람 (Höppe 1992)
+    ε_w  = 0.90   도시 표면 방사율 (Oke 1987)
+    σ    = 5.67×10⁻⁸  Stefan-Boltzmann 상수
+
+입력 기상: Open-Meteo archive (2025-07-01 ~ 2025-08-31, 7~8월 전체 시간대별 평균)
 출력:
-  link_utci_solweig.csv  — 링크별·시간별 MRT 및 UTCI (solweig 기반)
+  link_utci_solweig.csv  — 링크별·시간별 MRT 및 UTCI
 """
 
 import os
@@ -39,12 +50,19 @@ SVF_PATH = os.path.join(RES_DIR, 'link_svf_canopy.csv')
 OUT_PATH = os.path.join(RES_DIR, 'link_utci_solweig.csv')
 
 # 기존 S-DoT/ASOS 분석 기간과 동일하게 맞춤 (v3: 7일 평균)
-START_DATE = '2025-07-28'
-END_DATE   = '2025-08-03'
+START_DATE = '2025-07-01'
+END_DATE   = '2025-08-31'
 
-CANOPY_COEFF = 2.5   # °C — 수목 캐노피 최대 UTCI 감소 (Chen & Ng 2012)
+# ── 물리 상수 (인용 근거 명시) ────────────────────────────────────────────
+ALPHA_K      = 0.70      # 인체 단파 흡수율 (Fanger 1970; ISO 7730)
+EPSILON_P    = 0.97      # 인체 장파 방사율 (ISO 7726)
+FP           = 0.308     # 투영면적계수, 서 있는 사람 (Höppe 1992)
+SIGMA        = 5.67e-8   # Stefan-Boltzmann 상수 (W m⁻² K⁻⁴)
+EPSILON_WALL = 0.90      # 도시 표면 장파 방사율 (Oke 1987)
+DELTA_T_WALL = 10.0      # 주간 도시 표면 기온 초과분 K (Oke 1982; 서울 여름 추정)
+CANOPY_COEFF = 2.5       # 수목 캐노피 최대 UTCI 감소 °C (Chen & Ng 2012)
 
-# 서울 여름 태양 고도각 기반 일사 가중치 (solar_factor — 캐노피 보정용)
+# 캐노피 보정용 태양고도 가중치 (서울 여름 기준)
 SOLAR_FACTOR = {
     0: 0.00, 1: 0.00, 2: 0.00, 3: 0.00, 4: 0.00,
     5: 0.05, 6: 0.20, 7: 0.40, 8: 0.60, 9: 0.75,
@@ -72,45 +90,80 @@ def cos_solar_zenith(hour, lat=37.55, lon=127.04, doy=210):
     return float(max(cos_z, 0.0))
 
 
-# ── MRT 계산 (SOLWEIG 단순화 — Lindberg et al. 2008) ───────────────────
-def compute_mrt(Tair, GHI, svf, cos_z):
-    """
-    낮: MRT = Tair + 0.5*√(GHI*cos_z) * svf
-       - 완전 개활지(SVF=1): 최대 태양복사 노출 → 피크 Δ≈14°C (848W/m², cos_z=0.93)
-       - 완전 협곡(SVF=0) : 태양복사 차단 → MRT=Tair
-    야간: MRT = Tair - 2.0*svf
-       - 개활지(SVF=1) : 장파복사 방출 → 약간 냉각
-       - 협곡(SVF=0)  : 건물 장파 포집 → 기온 유지
-    """
-    if GHI > 10:   # 주간
-        delta_sun = 0.5 * np.sqrt(GHI * cos_z)
-        return Tair + delta_sun * svf
-    else:           # 야간
-        return Tair - 2.0 * svf
+# ── 직산 분리 (Erbs et al. 1982) ────────────────────────────────────────
+def _split_radiation(GHI, cos_z):
+    """전천일사 → 직달·산란 분리 (Erbs et al. 1982)"""
+    if GHI <= 10 or cos_z < 0.01:
+        return 0.0, float(GHI)
+    I0 = 1367.0 * cos_z        # 대기권 외 수평면 일사
+    kt = min(GHI / I0, 1.0)   # 청명도 지수
+    if kt <= 0.22:
+        kd = 1.0 - 0.09 * kt
+    elif kt <= 0.80:
+        kd = max(0.9511 - 0.1604*kt + 4.388*kt**2
+                 - 16.638*kt**3 + 12.336*kt**4, 0.1)
+    else:
+        kd = 0.165
+    K_dif = GHI * kd
+    K_dir = GHI - K_dif        # 수평면 직달
+    return float(K_dir), float(K_dif)
 
 
-# ── 1. Open-Meteo 기상 데이터 취득 (7일 평균) ──────────────────────────
-print(f"Open-Meteo Archive API에서 기상 데이터 취득 중...")
-print(f"  기간: {START_DATE} ~ {END_DATE} (S-DoT/ASOS v3 분석 기간)")
+# ── MRT 표준 공식 (Lindberg & Grimmond 2011; Thorsson et al. 2007) ───────
+def compute_mrt(Tair, GHI, RH, svf, cos_z):
+    """
+    (MRT+273.15)^4 = (α_k × K_abs + L_mean) / (ε_p × σ)
+
+    K_abs  = K_dir × fp  +  K_dif × SVF × 0.5   [인체 흡수 단파, Höppe 1992]
+    L_mean = L_sky × SVF  +  L_wall × (1−SVF)    [SVF 가중 장파]
+    L_sky  = ε_sky × σ × Tair_K^4               [Brutsaert 1975]
+    L_wall = ε_wall × σ × T_wall_K^4             [Oke 1987]
+    """
+    Tair_K = Tair + 273.15
+
+    # 단파: 직산 분리 후 인체 흡수량 계산
+    K_dir, K_dif = _split_radiation(GHI, cos_z)
+    K_abs = K_dir * FP + K_dif * svf * 0.5
+
+    # 장파: 대기 하향 (Brutsaert 1975)
+    ea = (RH / 100.0) * 6.112 * np.exp(17.67 * Tair / (Tair + 243.5))  # hPa
+    eps_sky = float(np.clip(0.575 * ea ** (1.0 / 7.0), 0.70, 1.00))
+    L_sky = eps_sky * SIGMA * Tair_K ** 4
+
+    # 장파: 도시 표면 (낮에는 가열된 표면 반영)
+    dT = DELTA_T_WALL if GHI > 50 else 0.0
+    L_wall = EPSILON_WALL * SIGMA * (Tair_K + dT) ** 4
+
+    # SVF 가중 평균 장파
+    L_mean = L_sky * svf + L_wall * (1.0 - svf)
+
+    # MRT 역산 (Stefan-Boltzmann)
+    mrt_K = ((ALPHA_K * K_abs + L_mean) / (EPSILON_P * SIGMA)) ** 0.25
+    return float(mrt_K - 273.15)
+
+
+# ── 1. Open-Meteo 기상 데이터 취득 → 폭염일만 평균 ──────────────────────
+# 폭염일 기준: 일최고기온 Tmax ≥ 33°C (기상청 폭염 기준)
+HEAT_THRESHOLD = 33.0
+
+print("Open-Meteo Archive API에서 기상 데이터 취득 중...")
+print(f"  기간: {START_DATE} ~ {END_DATE} (7~8월 전체)")
 print("  위치: 서울 성동구 중심 (lat=37.550, lon=127.040)")
 
 url = "https://archive-api.open-meteo.com/v1/archive"
-params = {
+
+# 시간별 데이터
+hourly_params = {
     "latitude":   37.550,
     "longitude":  127.040,
     "start_date": START_DATE,
     "end_date":   END_DATE,
-    "hourly": [
-        "temperature_2m",
-        "relative_humidity_2m",
-        "wind_speed_10m",
-        "shortwave_radiation",
-    ],
+    "hourly": ["temperature_2m", "relative_humidity_2m",
+               "wind_speed_10m", "shortwave_radiation"],
     "timezone":        "Asia/Seoul",
     "wind_speed_unit": "ms",
 }
-
-resp = requests.get(url, params=params, timeout=30)
+resp = requests.get(url, params=hourly_params, timeout=30)
 resp.raise_for_status()
 raw = resp.json()['hourly']
 
@@ -122,16 +175,23 @@ weather_all = pd.DataFrame({
     'GHI':  raw['shortwave_radiation'],
 })
 weather_all['hour'] = weather_all['dt'].dt.hour
+weather_all['date'] = weather_all['dt'].dt.date
 
-# 7일 시간대별 평균 (v3 기존 방법과 동일)
-weather = (weather_all
+# 일최고기온 계산 → 폭염일 식별
+daily_tmax = weather_all.groupby('date')['Tair'].max()
+heat_days  = set(daily_tmax[daily_tmax >= HEAT_THRESHOLD].index)
+print(f"  전체 일수: {daily_tmax.shape[0]}일 | 폭염일 (Tmax≥{HEAT_THRESHOLD}°C): {len(heat_days)}일")
+
+# 폭염일만 필터링 → 시간대별 평균
+weather_heat = weather_all[weather_all['date'].isin(heat_days)].copy()
+weather = (weather_heat
            .groupby('hour')[['Tair', 'RH', 'va', 'GHI']]
            .mean()
            .reset_index())
 weather['va'] = weather['va'].clip(lower=0.5)
 
-print(f"  취득 완료: {len(weather_all)}행 → 시간대별 평균 {len(weather)}개")
-print(f"  기온 평균(일간): {weather['Tair'].mean():.1f}°C / 13시 평균: {weather[weather['hour']==13]['Tair'].iloc[0]:.1f}°C")
+print(f"  취득 완료: {len(weather_heat)}행(폭염일) → 시간대별 평균 {len(weather)}개")
+print(f"  기온 평균(폭염일 일간): {weather['Tair'].mean():.1f}°C / 13시: {weather[weather['hour']==13]['Tair'].iloc[0]:.1f}°C")
 print(f"  최대 일사(13시): {weather[weather['hour']==13]['GHI'].iloc[0]:.0f} W/m²")
 
 # 7일 평균 기상 요약 저장
@@ -161,7 +221,7 @@ for _, wrow in weather.iterrows():
         svf_val    = float(srow['svf'])
         canopy_val = float(srow['canopy_ratio'])
 
-        mrt = compute_mrt(Tair, GHI, svf_val, cos_z)
+        mrt = compute_mrt(Tair, GHI, RH, svf_val, cos_z)
 
         try:
             utci_val = float(utci(tdb=Tair, tr=mrt, v=va, rh=RH)['utci'])
