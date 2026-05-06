@@ -10,8 +10,8 @@ UTCI 기반(Method 1~3) 한계:
 
 MRT 직접 사용 근거:
   - MRT std=4.57°C로 공간 변이 양호
-  - 임계값: Thorsson et al. (2007) MRT>50°C = 강한 열 스트레스,
-            Johansson et al. (2014) MRT>55°C = 회피 행동 유발
+  - 임계값: Thorsson et al. (2007) MRT>50°C 부근 = 강한 열 스트레스 (문헌 확인 필요)
+            55°C·58°C는 경험적 비교용 (교수님 논의 후 근거 확정 필요)
 
 임계값 3개 비교:
   THRESH_LOW=50°C  THRESH_MID=55°C  THRESH_HIGH=58°C

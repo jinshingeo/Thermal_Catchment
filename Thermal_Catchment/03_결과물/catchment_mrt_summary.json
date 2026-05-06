@@ -10,8 +10,8 @@
   "time_budget_min": 15,
   "walk_speed_kmh": 4.5,
   "references": [
-    "Thorsson et al. (2007) — MRT>50°C: strong heat stress",
-    "Johansson et al. (2014) — MRT>55°C: avoidance behaviour"
+    "Thorsson et al. (2007) — MRT>50°C 부근: strong heat stress (문헌 확인 필요)",
+    "MRT 55°C·58°C: 경험적 비교용, 문헌 근거 교수님 논의 후 확정"
   ],
   "low": {
     "왕십리역": {
