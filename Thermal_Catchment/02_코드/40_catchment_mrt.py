@@ -53,9 +53,9 @@ TIME_BUDGET = 15 * 60             # 900초
 TARGET_HOURS = [7, 10, 13, 16]
 
 MRT_THRESHOLDS = {
-    'low':  50.0,   # Thorsson et al. (2007): MRT>50°C = 강한 열 스트레스
-    'mid':  55.0,   # Johansson et al. (2014): MRT>55°C = 회피 행동 유발
-    'high': 58.0,   # 보수적 기준 (분포 상위 약 10%)
+    'low':  50.0,   # Thorsson et al. (2007): MRT>50°C = 강한 열 스트레스 (문헌 검토 필요)
+    'mid':  55.0,   # 경험적 기준: 분포 상위 약 38% (임계값 근거 교수님 논의 필요)
+    'high': 58.0,   # 보수적 기준: 분포 상위 약 21%
 }
 
 STATIONS = {
@@ -306,8 +306,8 @@ summary = {
     'time_budget_min': 15,
     'walk_speed_kmh':  4.5,
     'references':      [
-        'Thorsson et al. (2007) — MRT>50°C: strong heat stress',
-        'Johansson et al. (2014) — MRT>55°C: avoidance behaviour',
+        'Thorsson et al. (2007) — MRT>50°C: strong heat stress (검토 필요)',
+        '55°C 임계값: 경험적 기준 (문헌 근거 교수님 논의 후 확정)',
     ],
 }
 for label in MRT_THRESHOLDS:
