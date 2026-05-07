@@ -23,6 +23,7 @@ Thermal_Catchment/01_데이터/인구/LOCAL_PEOPLE_202508/
 Thermal_Catchment/03_결과물/residential_population.csv
 Thermal_Catchment/03_결과물/2sfca_results.csv
 Thermal_Catchment/03_결과물/link_utci_solweig.csv
+Thermal_Catchment/03_결과물/link_utci_sdot_solweig.csv
 Thermal_Catchment/03_결과물/catchment_classic_30min.json
 Thermal_Catchment/03_결과물/catchment_thermal_30min.json
 Thermal_Catchment/03_결과물/catchment_thermal_h*.json
