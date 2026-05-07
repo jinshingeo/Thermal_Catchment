@@ -26,14 +26,22 @@
 **APA**
 > Lindberg, F., & Grimmond, C. S. B. (2011). The influence of vegetation and building morphology on shadow patterns and mean radiant temperatures in urban areas: model development and evaluation. *Theoretical and Applied Climatology*, 105(3–4), 311–323. https://doi.org/10.1007/s00704-010-0382-8
 
-**인용 위치**: 방법론 섹션 — MRT 표준 공식(`MRT = [(α_k·K_abs + L_mean)/(ε_p·σ)]^0.25`) 직접 인용; SVF를 MRT 공간 변이의 주요 결정 인자로 제시
+**인용 위치**: 방법론 섹션 — MRT 표준 공식(`R = ξk Σ KiFi + εp Σ LiFi`) 직접 인용; SVF와 DEM 기반 입력 요구사항 명시; "모든 모델은 단순화 필요" 맥락 보완
 
-**원문 (✅ 검색 결과 확인)**
-> "The solar and longwave environmental irradiance geometry (SOLWEIG) model simulates spatial variations of 3-D radiation fluxes and mean radiant temperature (Tmrt) as well as shadow patterns in complex urban settings. A new vegetation scheme is included in SOLWEIG and evaluated, with a new shadow casting algorithm for complex vegetation structures."
-> (SOLWEIG 모델은 복잡한 도시 환경에서 3D 복사 플럭스와 평균복사온도, 그림자 패턴의 공간 변이를 시뮬레이션한다. 복잡한 식생 구조에 대한 새로운 그림자 투영 알고리즘을 포함한 새로운 식생 기법이 포함·평가되었다.)
+**원문 (✅ PDF 직접 확인)**
+> "SOLWEIG only requires a limited number of inputs, such as global shortwave radiation, air temperature, relative humidity, geographical information (latitude, longitude and elevation) and urban geometry represented by high-resolution ground and building digital elevation models (DEM)."
+> (SOLWEIG는 전천일사, 기온, 상대습도, 지리 정보(위도·경도·고도), 그리고 고해상도 지표·건물 수치표고모델(DEM)로 표현되는 도시 형태 등 제한된 수의 입력값만을 요구한다.)
 
-> "An overall correspondence of R² = 0.91 (p < 0.01, RMSE = 3.1 K) [between modelled and observed Tmrt]."
-> (모델과 실측 Tmrt 사이의 전반적 일치도: R² = 0.91, RMSE = 3.1K.)
+> MRT 평균복사플럭스밀도 공식 (Eq. 1):  
+> `R = ξk Σ(i=1..6) KiFi + εp Σ(i=1..6) LiFi`  
+> "For a rotationally symmetric standing or walking person, Fi is set to 0.22 for radiation fluxes from the four cardinal points (east, west, north and south) and 0.06 for radiation fluxes from above and below (Fanger 1970)."
+> (회전 대칭인 서 있거나 걷는 사람의 경우, Fi는 동·서·남·북 4방향 복사 플럭스에 대해 0.22, 위·아래 복사 플럭스에 대해 0.06으로 설정된다.)
+
+> "Surface temperature of vegetation is considered equal to air temperature."
+> (식생의 표면 온도는 기온과 동일하게 간주된다.) — 모델의 단순화 가정 중 하나
+
+> "An overall correspondence of R²=0.91 (p<0.01, RMSE=3.1 K) [between modelled and observed Tmrt]."
+> (모델과 실측 Tmrt 사이의 전반적 일치도: R²=0.91, RMSE=3.1K.)
 
 ---
 
@@ -123,14 +131,24 @@
 **APA**
 > Bröde, P., Fiala, D., Błażejczyk, K., Holmér, I., Jendritzky, G., Kampmann, B., Tinz, B., & Havenith, G. (2012). Deriving the operational procedure for the Universal Thermal Climate Index (UTCI). *International Journal of Biometeorology*, 56(3), 481–494. https://doi.org/10.1007/s00484-011-0454-1
 
-**인용 위치**: 방법론 섹션 — UTCI 38°C Hard Cut 임계값 설정 근거; "Very Strong Heat Stress" 등급 정의
+**인용 위치**: 방법론 섹션 — UTCI 38°C Hard Cut 임계값 설정 근거; "Very Strong Heat Stress" 등급 정의; UTCI 참조 조건(보행 4 km/h) 명시
 
-**원문 (✅ 검색 결과 확인)**
-> "The UTCI was classified into ten categories... values from +38°C to +46°C correspond to 'very strong heat stress'."
-> (UTCI는 10개 등급으로 분류되었으며, +38°C~+46°C는 '매우 강한 열 스트레스(very strong heat stress)'에 해당한다.)
-
+**원문 (✅ PDF 직접 확인)**
 > "The Universal Thermal Climate Index (UTCI) aimed for a one-dimensional quantity adequately reflecting the human physiological reaction to the multi-dimensionally defined actual outdoor thermal environment."
 > (UTCI는 실제 옥외 열환경의 다차원적 정의에 대한 인체의 생리적 반응을 적절히 반영하는 단일 차원 지표를 목표로 한다.)
+
+> UTCI 공식 (Eq. 1):  
+> `UTCI(Ta, Tr, va, pa) = Ta + Offset(Ta, Tr, va, pa)`  
+> (UTCI는 기준 환경의 등가 기온으로 정의되며, 실제 기온(Ta)에 오프셋을 더한 값이다.)
+
+> 참조 조건 (Fig. 1 캡션):  
+> "Activity: walking 4 km/h (135 W/m²); Climate: Tr=Ta, va,10m=0.5 m/s, rH=50% (Ta<29°C), pa=20 hPa (Ta>29°C)"
+> (활동: 4 km/h 보행(135 W/m²); 기후: Tr=Ta, 10 m 높이 풍속 0.5 m/s, 상대습도 50%(29°C 미만), 수증기압 20 hPa(29°C 초과))
+
+> UTCI 등급 체계 (Fig. 1 스케일 — PDF 직접 확인):  
+> - 38~46°C: **"very strong heat stress"**  
+> - >46°C: **"extreme heat stress"**
+> (38~46°C: 매우 강한 열 스트레스; 46°C 초과: 극한 열 스트레스)
 
 ---
 

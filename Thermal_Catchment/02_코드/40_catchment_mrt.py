@@ -70,7 +70,9 @@ STATIONS = {
 
 
 def compute_catchment(G_base, station_node, hot_edges_set):
-    """Classic vs Thermal 캐치먼트 계산 (hot_edges_set: {(u_str, v_str)})"""
+    """Classic vs Thermal 캐치먼트 계산 (hot_edges_set: {(u_str, v_str)})
+    감소율 기준: 노드 수(node_count) + 도로 길이(length_m) 병행 산출
+    """
     for u, v, data in G_base.edges(data=True):
         data['travel_time'] = data.get('length', 0) / WALK_SPEED
 
@@ -93,15 +95,32 @@ def compute_catchment(G_base, station_node, hot_edges_set):
     thermal_nodes = set(thermal_dist.keys())
     lost_nodes    = classic_nodes - thermal_nodes
 
+    # 길이 기반 감소율: 캐치먼트 내 양 끝점이 모두 포함된 엣지 길이 합산
+    classic_length = sum(
+        data.get('length', 0)
+        for u, v, data in G_base.edges(data=True)
+        if u in classic_nodes and v in classic_nodes
+    )
+    thermal_length = sum(
+        data.get('length', 0)
+        for u, v, data in G_base.edges(data=True)
+        if u in thermal_nodes and v in thermal_nodes
+    )
+    lost_length = classic_length - thermal_length
+
     return {
-        'classic_nodes':     classic_nodes,
-        'thermal_nodes':     thermal_nodes,
-        'lost_nodes':        lost_nodes,
-        'classic_count':     len(classic_nodes),
-        'thermal_count':     len(thermal_nodes),
-        'lost_count':        len(lost_nodes),
-        'reduction_pct':     round(len(lost_nodes) / max(len(classic_nodes), 1) * 100, 1),
-        'hot_edges_removed': len(edges_to_remove),
+        'classic_nodes':      classic_nodes,
+        'thermal_nodes':      thermal_nodes,
+        'lost_nodes':         lost_nodes,
+        'classic_count':      len(classic_nodes),
+        'thermal_count':      len(thermal_nodes),
+        'lost_count':         len(lost_nodes),
+        'reduction_pct':      round(len(lost_nodes) / max(len(classic_nodes), 1) * 100, 1),
+        'classic_length_m':   round(classic_length, 1),
+        'thermal_length_m':   round(thermal_length, 1),
+        'lost_length_m':      round(lost_length, 1),
+        'reduction_pct_len':  round(lost_length / max(classic_length, 1) * 100, 1),
+        'hot_edges_removed':  len(edges_to_remove),
     }
 
 
@@ -154,9 +173,10 @@ for label, thresh in MRT_THRESHOLDS.items():
             result = compute_catchment(G, sinfo['node'], hot_by_hour[hour])
             all_results[label][station_name][hour] = result
             print(f"  [{station_name}] {hour:02d}시 | "
-                  f"Classic {result['classic_count']:,} → "
-                  f"Thermal {result['thermal_count']:,} "
-                  f"(-{result['reduction_pct']}%)")
+                  f"길이 {result['classic_length_m']/1000:.2f}km → "
+                  f"{result['thermal_length_m']/1000:.2f}km "
+                  f"(-{result['reduction_pct_len']}%) | "
+                  f"노드 기준 -{result['reduction_pct']}%")
 
 
 # ── 시각화 1: 임계값별 히트맵 ────────────────────────────────────────────
@@ -321,6 +341,10 @@ for label in MRT_THRESHOLDS:
                 'thermal_nodes':     r['thermal_count'],
                 'lost_count':        r['lost_count'],
                 'reduction_pct':     r['reduction_pct'],
+                'classic_length_m':  r['classic_length_m'],
+                'thermal_length_m':  r['thermal_length_m'],
+                'lost_length_m':     r['lost_length_m'],
+                'reduction_pct_len': r['reduction_pct_len'],
                 'hot_edges_removed': r['hot_edges_removed'],
             }
 
