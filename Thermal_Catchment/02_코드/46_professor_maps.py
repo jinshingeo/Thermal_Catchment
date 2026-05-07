@@ -200,7 +200,7 @@ e = merge_to_edges(h13, 'mrt')
 draw_map(e, 'mrt',
          title='평균복사온도 (MRT) — 링크별 공간분포',
          subtitle=f'SOLWEIG 약식 (Lindberg & Grimmond 2011) | {HOUR:02d}시 | {PERIOD}',
-         cmap_name='plasma', vmin=42, vmax=67, unit='°C',
+         cmap_name='YlOrRd', vmin=42, vmax=67, unit='°C',
          cbar_label='MRT (°C)', fname='06_MRT.png',
          thresh_line=55.0)
 
