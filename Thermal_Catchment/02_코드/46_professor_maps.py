@@ -191,8 +191,8 @@ svf_e = merge_to_edges(svf_df, 'svf')
 draw_map(svf_e, 'svf',
          title='Sky View Factor (SVF) — 링크별 공간분포',
          subtitle='OSM 건물 + DEM 근사 | 시간 무관 (도시 형태 기반)',
-         cmap_name='RdYlGn', vmin=0, vmax=1, unit='',
-         cbar_label='SVF (0=완전 차폐, 1=완전 개방)',
+         cmap_name='RdYlGn_r', vmin=0, vmax=1, unit='',
+         cbar_label='SVF (0=완전 차폐 → 쾌적, 1=완전 개방 → 고온)',
          fname='05_SVF.png')
 
 # 06 MRT
