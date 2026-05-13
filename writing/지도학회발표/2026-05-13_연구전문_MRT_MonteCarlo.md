@@ -180,7 +180,7 @@ $$\quad \text{TARR}_{i,k} = \frac{C_i^{classic} - C_i^{thermal}(k)}{C_i^{classic
 
 집계구 $i$의 TARR 분포:
 
-$$\text{TARR}_i^{median}, \quad \left[\text{TARR}_i^{2.5\%},\ \text{TARR}_i^{97.5\%}\right] \text{ (95\% CI)}$$
+$$\widetilde{\text{TARR}}_i \quad \text{(중앙값)}, \qquad \left[\text{TARR}_i^{P2.5},\ \text{TARR}_i^{P97.5}\right] \quad \text{(95\% CI)}$$
 
 #### Monte Carlo의 의의
 
