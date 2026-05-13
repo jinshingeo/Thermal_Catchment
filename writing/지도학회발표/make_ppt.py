@@ -138,10 +138,10 @@ s = new_slide()
 add_textbox(s, '한국지도학회 학술대회 발표', 0.40, 0.20, 8.0, 0.40,
             size=11, color=C_GRAY)
 add_textbox(s,
-    'Thermal Catchment Area:\nMRT 기반 확률적 임계값과 Monte Carlo 접근',
+    'Thermal Catchment Area:\n열노출을 반영한 보행 환경 접근성\n공간 단위 제안',
     0.80, 0.90, 8.20, 2.20, size=28, bold=True, color=C_BLACK)
 add_textbox(s,
-    '폭염을 반영한 보행 대중교통 접근성 공간 단위 제안 — 서울 성동구 사례',
+    'MRT(평균복사온도) 기반 보행 접근성 감소 분석 — 서울 성동구 사례',
     0.80, 3.20, 8.20, 0.60, size=14, color=C_GRAY)
 add_textbox(s, '신진', 9.50, 5.10, 3.50, 0.40,
             size=15, bold=True, color=C_BLACK)
@@ -159,9 +159,8 @@ set_notes(s,
 """안녕하세요. 경희대학교 기후사회과학융합학과 석사과정 신진입니다.
 오늘 발표할 주제는 'Thermal Catchment Area'입니다.
 
-폭염이 심해지는 여름철, 우리가 지하철역에 걸어서 갈 수 있는 범위가 열환경에 의해 실제로 줄어든다는 점에 착안하여,
-MRT(평균복사온도)를 기반으로 한 새로운 보행 접근성 공간 단위를 제안하고,
-그 임계값의 불확실성을 Monte Carlo 방법으로 정량화한 연구를 소개드리겠습니다.
+폭염이 심해지는 여름철, 우리가 걸어서 갈 수 있는 범위가 열환경에 의해 실제로 줄어든다는 점에 착안하여,
+MRT(평균복사온도)를 기반으로 한 새로운 보행 접근성 공간 단위를 제안한 연구입니다.
 발표 시간은 약 15분입니다.""")
 
 
@@ -361,7 +360,7 @@ SVF가 낮을수록 건물이 하늘을 많이 가린다는 의미이고,
 # 슬라이드 7: Chapter 3 — Thermal Catchment & TARR
 # ═══════════════════════════════════════════════════════════════════════════
 s = new_slide()
-add_chapter_header(s, 3, '방법론', 'Step 2: Thermal Catchment Area & TARR 정의')
+add_chapter_header(s, 3, '방법론', 'Step 2: Thermal Catchment Area 정의')
 
 add_multiline(s, [
     ('● Classic Catchment', True),
@@ -374,13 +373,13 @@ add_multiline(s, [
     ('   → Hard Cut 가정: 보행자는 MRT가 임계값 이상인 링크를 완전히 회피', False),
     ('   → Dijkstra 알고리즘(최단경로)으로 각 집계구에서 도달 가능 정류장 탐색', False),
     ('', False),
-    ('● TARR (Thermal Accessibility Reduction Rate) — 열환경 접근성 감소율', True),
+    ('● 열노출에 의한 접근성 감소율 정량화', True),
     ('', False),
-    ('   TARR (%) =  ( Classic_cnt − Thermal_cnt ) / Classic_cnt  ×  100', True),
+    ('   접근성 감소율 (%) =  ( Classic_cnt − Thermal_cnt ) / Classic_cnt  ×  100', True),
     ('', False),
-    ('   → TARR = 0%:   열환경 제약 없음 — 폭염에도 접근 가능 범위 유지', False),
-    ('   → TARR = 100%: 모든 정류장 접근 불가 — 완전 고립', False),
-    ('   → TARR이 높은 집계구 = 폭염 시 대중교통 접근성 취약 지역', False),
+    ('   → 0%: 열환경 제약 없음 — 열노출에도 접근 가능 범위 유지', False),
+    ('   → 100%: 모든 정류장 접근 불가 — 완전 고립', False),
+    ('   → 감소율이 높은 집계구 = 열노출 시 보행 접근성 취약 지역', False),
 ], 0.45, 1.88, 12.40, 5.20, size=12)
 
 set_notes(s,
@@ -402,13 +401,13 @@ TARR이 클수록 폭염 시 접근성 손실이 크다는 의미로,
 # 슬라이드 8: Chapter 3 — Monte Carlo 설계
 # ═══════════════════════════════════════════════════════════════════════════
 s = new_slide()
-add_chapter_header(s, 3, '방법론', 'Step 3: Monte Carlo 임계값 불확실성 분석')
+add_chapter_header(s, 3, '방법론', 'Step 3: 임계값 민감도 검증 — Monte Carlo')
 
 add_multiline(s, [
-    ('● 왜 Monte Carlo가 필요한가?', True),
-    ('   → MRT 임계값을 "55°C"로 단일 고정하면 임계값 선택 자체의 불확실성이 무시됩니다.', False),
-    ('   → 기상 조건(기온·습도·풍속)은 날마다 달라지므로, "위험 MRT" 역시 범위로 존재합니다.', False),
-    ('   → 교수님 피드백: "임계값이 애매할 때 Monte Carlo를 돌려라"', False),
+    ('● 왜 민감도 검증이 필요한가?', True),
+    ('   → MRT 임계값(55°C)은 UTCI 기준에서 추론한 값으로, 단일 고정값이 갖는 불확실성이 있습니다.', False),
+    ('   → 기상 조건(기온·습도·풍속)은 날마다 달라지므로, 실질적인 "위험 MRT"는 범위로 존재합니다.', False),
+    ('   → 따라서 임계값이 ±몇 °C 달라져도 결론이 유지되는지(robust한지) 확인이 필요합니다.', False),
     ('', False),
     ('● 분석 설계 (N=2,000 샘플, 난수 시드 42 고정)', True),
     ('', False),
@@ -442,7 +441,7 @@ set_notes(s,
 # 슬라이드 9: Chapter 4 — S-curve (핵심 결과)
 # ═══════════════════════════════════════════════════════════════════════════
 s = new_slide()
-add_chapter_header(s, 4, '분석 결과', '핵심 발견: MRT 임계값 민감도 S-curve')
+add_chapter_header(s, 4, '분석 결과', '임계값 민감도 검증: S-curve')
 
 img_path = os.path.join(FIG_DIR, 'mc_threshold_sensitivity.png')
 if os.path.exists(img_path):
@@ -497,7 +496,7 @@ CI가 넓다는 것은 결과가 불안정하다는 의미가 아니라,
 # 슬라이드 10: Chapter 4 — TARR 공간 분포
 # ═══════════════════════════════════════════════════════════════════════════
 s = new_slide()
-add_chapter_header(s, 4, '분석 결과', 'TARR 공간 분포 (MRT 55°C 기준, 13시)')
+add_chapter_header(s, 4, '분석 결과', '열노출에 의한 접근성 감소율 공간 분포 (MRT 55°C, 13시)')
 
 img_path = os.path.join(FIG_DIR, 'tarr_spatial_map.png')
 if os.path.exists(img_path):
@@ -507,20 +506,20 @@ if os.path.exists(img_path):
 add_multiline(s, [
     ('주요 통계', True),
     ('', False),
-    ('● 집계구 평균 TARR: 73.3%', True),
-    ('   → 폭염 시 평균 73%의', False),
+    ('● 집계구 평균 감소율: 73.3%', True),
+    ('   → 열노출 시 평균 73%의', False),
     ('     정류장 접근 기회 손실', False),
     ('', False),
-    ('● TARR > 80%: 고취약 지역', False),
+    ('● 감소율 > 80%: 고취약 지역', False),
     ('   (짙은 빨강)', False),
     ('', False),
     ('● 공간 패턴', True),
     ('   → 한강변·서울숲 주변', False),
-    ('     TARR 높음', False),
+    ('     감소율 높음', False),
     ('     (개방 구간 = 고온 링크 多)', False),
     ('', False),
     ('   → 건물 밀집 구간', False),
-    ('     TARR 상대적 낮음', False),
+    ('     감소율 상대적 낮음', False),
     ('     (SVF↓ = 그늘 多)', False),
     ('', False),
     ('● 공간 군집 패턴 존재', False),
@@ -547,7 +546,7 @@ set_notes(s,
 # 슬라이드 11: Chapter 4 — Monte Carlo 분포
 # ═══════════════════════════════════════════════════════════════════════════
 s = new_slide()
-add_chapter_header(s, 4, '분석 결과', 'Monte Carlo TARR 분포 및 불확실성 공간 분포')
+add_chapter_header(s, 4, '분석 결과', '임계값 민감도 검증: Monte Carlo 분포 결과')
 
 img_path = os.path.join(FIG_DIR, 'mc_tarr_distribution.png')
 if os.path.exists(img_path):
@@ -559,10 +558,10 @@ if os.path.exists(img_path2):
     pass  # 다음 슬라이드에서 단독으로
 
 add_multiline(s, [
-    ('● TARR 중앙값 평균: 70.2%  (std: 18.3%)', True),
-    ('● 95% CI 폭 평균: 39.0%p  → "임계값 4°C 불확실성이 TARR을 39%p 변동시킴"', True),
-    ('● CI 폭이 넓은 이유: 53~57°C S-curve 경사 구간이 N(55, 4²) 샘플링 범위 안에 포함됨', False),
-    ('   → CI 폭은 "불안정"의 징표가 아니라, S-curve 민감 구간의 존재를 정량적으로 보여주는 결과임', False),
+    ('● 접근성 감소율 중앙값 평균: 70.2%  (std: 18.3%)  →  단일값 73.3%와 근접 → robust 확인', True),
+    ('● 95% CI 폭 평균: 39.0%p  →  임계값 ±4°C 불확실성이 감소율을 약 39%p 변동시킬 수 있음', False),
+    ('● CI 폭이 넓은 이유: 53~57°C S-curve 경사 구간이 샘플링 범위 안에 포함되기 때문', False),
+    ('   → 이는 결과의 불안정을 의미하는 것이 아니라, 해당 구간에서 임계값 선택이 결정적임을 보여줌', False),
 ], 0.45, 6.10, 12.40, 1.20, size=11)
 
 set_notes(s,
@@ -765,20 +764,19 @@ add_chapter_header(s, 6, '결론', '요약 및 기여')
 
 add_multiline(s, [
     ('● 개념적 기여: Thermal Catchment Area 제안', True),
-    ('   → 폭염 시 MRT 기반 Hard Cut을 적용한 새로운 보행 접근성 공간 단위', False),
+    ('   → 열노출 조건에서 MRT 기반 Hard Cut을 적용한 새로운 보행 접근성 공간 단위', False),
     ('   → 기존 Catchment가 무시해온 열환경 제약을 공간 단위 자체에 내재화', False),
     ('', False),
     ('● 실증 결과: 성동구 집계구(n=506), MRT 55°C 기준, 13시 기준', True),
-    ('   → 집계구 평균 TARR 73.3% — 폭염 시 약 73%의 정류장 접근 기회 손실', False),
-    ('   → 서울숲역 80.0%, 행당역 77.6% 등 역별 손실율 차이 확인', False),
+    ('   → 집계구 평균 접근성 감소율 73.3% — 열노출 시 약 73%의 정류장 접근 기회 손실', False),
+    ('   → 서울숲역 80.0%, 행당역 77.6% 등 역별 차이 확인 → 공간 환경 이질성 반영', False),
     ('', False),
-    ('● 방법론적 기여: S-curve 발견 + Monte Carlo 불확실성 정량화', True),
-    ('   → 53~57°C 구간에서 TARR 88%→39% 급변 — 임계값 선택이 결과에 결정적', False),
-    ('   → Monte Carlo (N=2,000)로 임계값 불확실성을 확률적으로 전파', False),
-    ('   → 단일값 결과(73.3%)가 Monte Carlo 중앙값(70.2%)과 근접 — robust 확인', False),
+    ('● 임계값 민감도 검증 (Monte Carlo, N=2,000)', True),
+    ('   → 단일값(73.3%)이 Monte Carlo 중앙값(70.2%)과 근접 → 55°C 기준의 robust성 확인', False),
+    ('   → S-curve 발견: 53~57°C 구간에서 접근성 감소율 급변 — 임계값 선택이 결정적인 구간 존재', False),
     ('', False),
     ('● 정책적 함의', True),
-    ('   → TARR 고취약 집계구를 우선 쿨링 인프라 정비 대상으로 공간적 식별 가능', False),
+    ('   → 접근성 감소율이 높은 집계구를 우선 쿨링 인프라 정비 대상으로 공간적 식별 가능', False),
     ('   → Thermal Catchment는 기후 적응형 도시 접근성 계획의 공간 기준 단위로 활용 가능', False),
     ('', False),
 ], 0.45, 1.88, 12.40, 5.00, size=12)
