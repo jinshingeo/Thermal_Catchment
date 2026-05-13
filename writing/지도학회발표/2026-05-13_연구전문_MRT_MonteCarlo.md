@@ -180,7 +180,7 @@ $$\quad \text{TARR}_{i,k} = \frac{C_i^{classic} - C_i^{thermal}(k)}{C_i^{classic
 
 집계구 $i$의 TARR 분포:
 
-$$\text{TARR}_i^{median}, \quad \text{TARR}_i^{[2.5\%, 97.5\%]} \text{ (95\% CI)}$$
+$$\text{TARR}_i^{median}, \quad \left[\text{TARR}_i^{2.5\%},\ \text{TARR}_i^{97.5\%}\right] \text{ (95\% CI)}$$
 
 #### Monte Carlo의 의의
 
@@ -243,6 +243,8 @@ SVF가 낮은(차폐된) 링크에서 MRT가 낮고, 한강변·서울숲 인접
 | TARR > 50% | 412개 집계구 (81.4%) |
 | TARR = 100% (완전 차단) | 87개 집계구 (17.2%) |
 
+![TARR 집계구 공간 분포](../../Thermal_Catchment/03_결과물/figures/tarr_spatial_map.png)
+
 ### 5.3 역세권별 정류장 접근성 감소 (13시, 단일 임계값 MRT ≥ 55°C)
 
 | 역 | Classic 정류장 수 | Thermal 정류장 수 | 감소 수 | 감소율 |
@@ -256,6 +258,8 @@ SVF가 낮은(차폐된) 링크에서 MRT가 낮고, 한강변·서울숲 인접
 | 옥수역 | 38 | 18 | 20 | **-52.6%** |
 
 *주: 9시·18시는 MRT < 55°C (최고 48.6°C, 46.7°C)로 접근성 감소 없음 (TARR=0%)*
+
+![3시간대별 열환경 지표 비교](../../Thermal_Catchment/03_결과물/figures/tarr_3hour_comparison.png)
 
 ### 5.4 Monte Carlo 결과
 
@@ -280,7 +284,11 @@ SVF가 낮은(차폐된) 링크에서 MRT가 낮고, 한강변·서울숲 인접
 
 55~57°C 구간에서 2°C 차이로 TARR가 73.3%→39.0%로 **34.3%p 급락**하는 변곡점이 확인된다. 이 구간의 링크들이 네트워크 연결성의 임계 구조를 담당하는 "교량 링크(bridge links)"임을 시사한다.
 
+![MRT 임계값 민감도 S자 곡선](../../Thermal_Catchment/03_결과물/figures/mc_threshold_sensitivity.png)
+
 **CI 해석**: 95% CI 폭(0.3~98.3%)이 넓은 것은 오류가 아니라, 이 구간에서 TARR가 얼마나 급격히 변하는가를 보여주는 결과 자체다. 55°C는 S자 곡선의 보수적 하한으로서 적절한 임계점이다.
+
+![Monte Carlo TARR 중앙값 + CI 폭 공간 분포](../../Thermal_Catchment/03_결과물/figures/mc_tarr_ci_map.png)
 
 ### 5.5 공간 환경 변수와 TARR 회귀분석
 
@@ -293,6 +301,8 @@ SVF가 낮은(차폐된) 링크에서 MRT가 낮고, 한강변·서울숲 인접
 | 고온 링크 비율 (MRT≥55°C) | + | *** |
 
 *주: 회귀분석 상세 결과는 43_regression_method4.py 출력 참조*
+
+![집계구 TARR vs 공간환경 변수 OLS 산점도](../../Thermal_Catchment/03_결과물/figures/regression_scatter.png)
 
 ---
 
@@ -327,6 +337,10 @@ $$A_i = \sum_{j \in S} S_j \cdot \exp\left(-\frac{1}{2}\left(\frac{t_{ij}}{t_0}\
 
 두 방법론 간 상관계수: **r = 0.979** (n=506, p < 0.001)  
 회귀선 기울기: 0.97 (y=x에 근접)
+
+![중력모델 Classic / Thermal / 감소율 공간 분포](../../Thermal_Catchment/03_결과물/figures/gravity_mrt_map.png)
+
+![단순 카운트 vs 중력모델 감소율 산점도](../../Thermal_Catchment/03_결과물/figures/gravity_vs_count_scatter.png)
 
 #### 해석 — 왜 r=0.979가 강점인가
 
