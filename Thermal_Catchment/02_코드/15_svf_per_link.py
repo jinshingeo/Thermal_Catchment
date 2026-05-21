@@ -39,6 +39,7 @@ OUT_PATH   = os.path.join(RES_DIR, 'link_svf_canopy.csv')
 
 BULD_BUFFER  = 20   # m — H 계산을 위한 링크 주변 건물 탐색 반경
 CANOPY_BUFFER = 15  # m — 가로수 캐노피 측정 링크 버퍼
+TREE_HEIGHT  = 10.0  # m — 수목 캐노피 높이 (UMEP TreePlanter Tutorial; Lindberg et al.)
 
 # 도로 유형별 표준 폭 (m) — 국토부 도로설계기준 / OSM 실측 통계
 # 양방향 차로 포함 전체 노면폭 기준
@@ -98,8 +99,8 @@ buld = buld[buld.geometry.is_valid].copy().reset_index(drop=True)
 buld_sindex = buld.sindex
 print(f"  성동구 건물: {len(buld):,}개 | 평균높이 {buld['height_m'].mean():.1f}m")
 
-# ── 녹지(가로수) 데이터 로드 ────────────────────────────────────────────
-print("가로수 데이터 로드 중...")
+# ── 녹지(전체 도시숲) 데이터 로드 ──────────────────────────────────────
+print("도시숲 데이터 로드 중...")
 green_raw = gpd.read_file(GREEN_PATH)
 bbox_gdf = gpd.GeoDataFrame(
     geometry=[Point(127.015, 37.535), Point(127.065, 37.565)], crs='EPSG:4326'
@@ -107,35 +108,38 @@ bbox_gdf = gpd.GeoDataFrame(
 xmin, ymin = bbox_gdf.geometry[0].x, bbox_gdf.geometry[0].y
 xmax, ymax = bbox_gdf.geometry[1].x, bbox_gdf.geometry[1].y
 green = green_raw.cx[xmin:xmax, ymin:ymax].copy()
-street_trees = green[green['U2_NAM'] == '가로수'].copy().reset_index(drop=True)
+street_trees = green.copy().reset_index(drop=True)   # 도시숲·마을숲·경관숲·학교숲·가로수 전체
 tree_sindex = street_trees.sindex
-print(f"  성동구 가로수: {len(street_trees):,}개")
+print(f"  성동구 도시숲(전체): {len(street_trees):,}개 | 유형: {street_trees['U2_NAM'].value_counts().to_dict()}")
 
 
 # ── SVF 계산 함수 (Oke 1987) ────────────────────────────────────────────
-def calc_svf_hw(link_geom, highway_val):
+def calc_svf_hw(link_geom, highway_val, canopy_ratio=0.0):
     """
     Oke(1987) H/W street canyon 공식으로 SVF 계산
-      H = 링크 버퍼 20m 내 건물 평균 높이
+      H_eff = 건물 평균 높이 + TREE_HEIGHT × canopy_ratio  (캐노피 차폐 반영)
       W = 도로 유형별 표준 폭
-      SVF = 1 / sqrt(1 + (H/W)^2)
-    건물이 없으면 SVF = 1.0 (개활지)
+      SVF = 1 / sqrt(1 + (H_eff/W)^2)
+    건물·캐노피 모두 없으면 SVF = 1.0 (개활지)
+    캐노피 높이 기준: UMEP TreePlanter Tutorial (Lindberg et al.)
     """
     W = get_width(highway_val)
     buf = link_geom.buffer(BULD_BUFFER)
 
     candidates_idx = list(buld_sindex.intersection(buf.bounds))
     if not candidates_idx:
-        return 1.0, 0.0, W   # svf, H, W
+        H_bld = 0.0
+    else:
+        cands = buld.iloc[candidates_idx]
+        cands = cands[cands.geometry.intersects(buf)]
+        H_bld = float(cands['height_m'].mean()) if len(cands) > 0 else 0.0
 
-    cands = buld.iloc[candidates_idx]
-    cands = cands[cands.geometry.intersects(buf)]
-    if len(cands) == 0:
-        return 1.0, 0.0, W
+    H_eff = H_bld + TREE_HEIGHT * canopy_ratio
+    if H_eff == 0.0:
+        return 1.0, round(H_bld, 1), W
 
-    H = float(cands['height_m'].mean())
-    svf = 1.0 / np.sqrt(1.0 + (H / W) ** 2)
-    return round(svf, 4), round(H, 1), W
+    svf = 1.0 / np.sqrt(1.0 + (H_eff / W) ** 2)
+    return round(svf, 4), round(H_bld, 1), W
 
 
 def calc_canopy_ratio(link_geom):
@@ -163,8 +167,8 @@ for i, (idx, row) in enumerate(edges_utm.iterrows()):
 
     u, v    = idx[0], idx[1]
     hw      = row.get('highway', 'unclassified')
-    svf, H, W = calc_svf_hw(row.geometry, hw)
-    canopy  = calc_canopy_ratio(row.geometry)
+    canopy  = calc_canopy_ratio(row.geometry)   # SVF보다 먼저 계산
+    svf, H, W = calc_svf_hw(row.geometry, hw, canopy_ratio=canopy)
 
     rows.append({
         'u':            u,
