@@ -41,7 +41,7 @@ HEATWAVE_MET = {
 }
 
 MODEL_ID           = "Qwen/Qwen2-VL-7B-Instruct"
-DIRECTION_PRIORITY = ["front"]  # front 방향만 사용 (보행자 진행 방향 시점)
+DIRECTION_PRIORITY = ["back"]   # 실제 진행 방향 시점 (파일명 라벨 기준)
 MAX_NEW_TOKENS     = 1024
 
 logging.basicConfig(
