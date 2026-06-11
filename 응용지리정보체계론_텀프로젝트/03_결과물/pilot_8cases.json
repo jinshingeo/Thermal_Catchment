@@ -1,0 +1,326 @@
+[
+  {
+    "case": {
+      "no": 1,
+      "title": "완전 개활지",
+      "filename": "287287152_4081270724_front.jpg",
+      "thesis": {
+        "svf": 0.904,
+        "canopy": 0.006,
+        "mrt": 58.8,
+        "hw": "primary"
+      },
+      "expected": {
+        "svf_cat": "Open",
+        "mrt_cat": "High"
+      },
+      "note": "기본 정확도 — 논문·VLLM 일치 기대"
+    },
+    "results": {
+      "track1": {
+        "svf_category": "Enclosed",
+        "svf_confidence": "High",
+        "svf_evidence": "The overhead view is heavily blocked by buildings and a bridge.",
+        "canopy_ratio": 0.0,
+        "canopy_confidence": "High",
+        "canopy_evidence": "There are no trees or tree coverage visible on the walkway."
+      },
+      "track2": {
+        "mrt_category": "Moderate",
+        "confidence": "High",
+        "solar_exposure": "Partial",
+        "sky_openness": "open",
+        "shading_source": "building",
+        "key_observations": [
+          "The street is lined with tall buildings providing partial shade.",
+          "There are no trees or structures directly casting shade on the walking path.",
+          "The sky is partly cloudy, allowing some direct sunlight to reach the street."
+        ],
+        "reasoning": "The street is partially shaded by tall buildings, which provides some relief from direct sunlight. However, the sky is partly cloudy, allowing some direct sunlight to reach the street. The walking path is not continuously in shade, hence the Moderate MRT category."
+      }
+    }
+  },
+  {
+    "case": {
+      "no": 2,
+      "title": "수목 밀집 가로수길",
+      "filename": "13070402056_13070402072_front.jpg",
+      "thesis": {
+        "svf": 0.599,
+        "canopy": 0.041,
+        "mrt": 54.3,
+        "hw": "primary"
+      },
+      "expected": {
+        "svf_cat": "Semi",
+        "mrt_cat": "Moderate"
+      },
+      "note": "캐노피 인식 — canopy_ratio 논문 대비 확인"
+    },
+    "results": {
+      "track1": {
+        "svf_category": "Open",
+        "svf_confidence": "High",
+        "svf_evidence": "The overhead view is mostly clear with a few buildings and trees visible.",
+        "canopy_ratio": 0.25,
+        "canopy_confidence": "High",
+        "canopy_evidence": "There are trees on both sides of the street, but they do not cover the entire walkway."
+      },
+      "track2": {
+        "mrt_category": "Moderate",
+        "confidence": "High",
+        "solar_exposure": "Partial",
+        "sky_openness": "open",
+        "shading_source": "tree",
+        "key_observations": [
+          "The street is lined with trees providing partial shade.",
+          "There are buildings on both sides of the street.",
+          "The sky is partly cloudy but not fully shaded by the trees."
+        ],
+        "reasoning": "The street is partially shaded by trees, which provides some relief from direct sunlight. The sky is open, allowing some sunlight to reach the street. The presence of buildings on both sides of the street also contributes to the moderate MRT."
+      }
+    }
+  },
+  {
+    "case": {
+      "no": 3,
+      "title": "고층 건물 협곡",
+      "filename": "3856575393_4652841532_front.jpg",
+      "thesis": {
+        "svf": 0.351,
+        "canopy": 0.045,
+        "mrt": 50.1,
+        "hw": "residential"
+      },
+      "expected": {
+        "svf_cat": "Enclosed",
+        "mrt_cat": "Low"
+      },
+      "note": "도시 협곡 인식 — 논문·VLLM 일치 기대"
+    },
+    "results": {
+      "track1": {
+        "svf_category": "Enclosed",
+        "svf_confidence": "High",
+        "svf_evidence": "The overhead view is heavily blocked by buildings and bridges.",
+        "canopy_ratio": 0.0,
+        "canopy_confidence": "High",
+        "canopy_evidence": "There are no trees or tree coverage over the walkway."
+      },
+      "track2": {
+        "mrt_category": "Moderate",
+        "confidence": "High",
+        "solar_exposure": "Partial",
+        "sky_openness": "open",
+        "shading_source": "building",
+        "key_observations": [
+          "The street is flanked by tall buildings on both sides.",
+          "There are trees visible in the distance, providing some shade.",
+          "The street appears to be partially shaded by the buildings."
+        ],
+        "reasoning": "The street is partially shaded by the tall buildings on both sides, which provides some relief from direct sunlight. The sky is open, allowing some sunlight to reach the street. The presence of trees in the distance also contributes to the moderate MRT category."
+      }
+    }
+  },
+  {
+    "case": {
+      "no": 4,
+      "title": "고가도로·교각 아래",
+      "filename": "287287152_7838649559_front.jpg",
+      "thesis": {
+        "svf": 0.223,
+        "canopy": 0.218,
+        "mrt": 48.9,
+        "hw": "secondary_link"
+      },
+      "expected": {
+        "svf_cat": "Enclosed",
+        "mrt_cat": "Low"
+      },
+      "note": "핵심케이스 — 고가 구조물을 VLLM이 포착하는지 확인"
+    },
+    "results": {
+      "track1": {
+        "svf_category": "Enclosed",
+        "svf_confidence": "High",
+        "svf_evidence": "The overhead view is heavily blocked by buildings and an elevated road.",
+        "canopy_ratio": 0.25,
+        "canopy_confidence": "High",
+        "canopy_evidence": "There are trees on both sides of the street, but they do not cover the walkway."
+      },
+      "track2": {
+        "mrt_category": "Moderate",
+        "confidence": "High",
+        "solar_exposure": "Shaded",
+        "sky_openness": "Enclosed",
+        "shading_source": "Building",
+        "key_observations": [
+          "The path is shaded by the overpass and buildings on either side.",
+          "There is no direct sunlight visible on the path."
+        ],
+        "reasoning": "The path is shaded by the overpass and buildings on either side, indicating that it is not directly exposed to the sun. The sky is not fully open, suggesting that the path is enclosed by structures, which provides shade."
+      }
+    }
+  },
+  {
+    "case": {
+      "no": 5,
+      "title": "일반 주거 골목",
+      "filename": "4179264033_3846735363_front.jpg",
+      "thesis": {
+        "svf": null,
+        "canopy": null,
+        "mrt": 55.0,
+        "hw": "footway"
+      },
+      "expected": {
+        "svf_cat": "Semi",
+        "mrt_cat": "Moderate"
+      },
+      "note": "Semi 분별력 — 중간 케이스 올바른 분류 확인"
+    },
+    "results": {
+      "track1": {
+        "svf_category": "Enclosed",
+        "svf_confidence": "High",
+        "svf_evidence": "The overhead view is heavily blocked by buildings and wires.",
+        "canopy_ratio": 0.0,
+        "canopy_confidence": "High",
+        "canopy_evidence": "There are no trees or tree canopies visible on the walkway."
+      },
+      "track2": {
+        "mrt_category": "Moderate",
+        "confidence": "High",
+        "solar_exposure": "Partial",
+        "sky_openness": "open",
+        "shading_source": "tree",
+        "key_observations": [
+          "The street is partially shaded by trees on the left side.",
+          "There is a tree on the left side of the street providing some shade."
+        ],
+        "reasoning": "The street is partially shaded by trees on the left side, which provides some shade and reduces the direct sunlight reaching the walking path."
+      }
+    }
+  },
+  {
+    "case": {
+      "no": 6,
+      "title": "아케이드·캐노피형 상가",
+      "filename": "436839040_4179354303_back.jpg",
+      "thesis": {
+        "svf": 0.815,
+        "canopy": 0.003,
+        "mrt": 57.3,
+        "hw": "tertiary"
+      },
+      "expected": {
+        "svf_cat": "Enclosed",
+        "mrt_cat": "Low"
+      },
+      "note": "핵심케이스 — 논문 SVF=0.815(개활지) vs VLLM 인공그늘 인식"
+    },
+    "results": {
+      "track1": {
+        "svf_category": "Open",
+        "svf_confidence": "High",
+        "svf_evidence": "The overhead view is mostly clear with a few buildings and trees visible.",
+        "canopy_ratio": 0.25,
+        "canopy_confidence": "High",
+        "canopy_evidence": "There are trees along the sidewalk, but they do not cover the entire walkway."
+      },
+      "track2": {
+        "mrt_category": "Moderate",
+        "confidence": "High",
+        "solar_exposure": "Partial",
+        "sky_openness": "open",
+        "shading_source": "tree",
+        "key_observations": [
+          "The street is lined with trees providing partial shade.",
+          "There are buildings on both sides of the street.",
+          "The sky is partly cloudy, allowing some direct sunlight to reach the street."
+        ],
+        "reasoning": "The street is partially shaded by trees, and the sky is partly cloudy, which suggests that the walking path is not directly exposed to the sun but still receives some direct sunlight. This results in a moderate MRT."
+      }
+    }
+  },
+  {
+    "case": {
+      "no": 7,
+      "title": "넓은 도로+한쪽만 건물",
+      "filename": "732242060_4179011702_front.jpg",
+      "thesis": {
+        "svf": 0.503,
+        "canopy": 0.051,
+        "mrt": 52.9,
+        "hw": "primary"
+      },
+      "expected": {
+        "svf_cat": "Open",
+        "mrt_cat": "Moderate"
+      },
+      "note": "비대칭 캐니언 — H/W 과소추정 테스트"
+    },
+    "results": {
+      "track1": {
+        "svf_category": "Open",
+        "svf_confidence": "High",
+        "svf_evidence": "The overhead view is mostly clear with only a few buildings and power lines visible.",
+        "canopy_ratio": 0.25,
+        "canopy_confidence": "High",
+        "canopy_evidence": "There are trees on both sides of the street, but they do not cover the entire walkway."
+      },
+      "track2": {
+        "mrt_category": "High",
+        "confidence": "High",
+        "solar_exposure": "Direct",
+        "sky_openness": "open",
+        "shading_source": "none",
+        "key_observations": [
+          "The street is wide and open with no effective shade from any source"
+        ],
+        "reasoning": "The street is wide and open with no effective shade from any source, and the GHI is 750W/m², which exceeds the threshold for a walking path without shade to exceed MRT 55°C."
+      }
+    }
+  },
+  {
+    "case": {
+      "no": 8,
+      "title": "수목+건물 혼합 그늘",
+      "filename": "3856575251_3856575248_front.jpg",
+      "thesis": {
+        "svf": null,
+        "canopy": null,
+        "mrt": 54.4,
+        "hw": "footway"
+      },
+      "expected": {
+        "svf_cat": "Semi",
+        "mrt_cat": "Moderate"
+      },
+      "note": "혼합 그늘 — shading_source=mixed 및 Moderate 분류 확인"
+    },
+    "results": {
+      "track1": {
+        "svf_category": "Open",
+        "svf_confidence": "High",
+        "svf_evidence": "The overhead view is mostly clear with only a few trees and buildings visible.",
+        "canopy_ratio": 0.25,
+        "canopy_confidence": "High",
+        "canopy_evidence": "There are trees on both sides of the street, but they do not cover the entire walkway."
+      },
+      "track2": {
+        "mrt_category": "Moderate",
+        "confidence": "High",
+        "solar_exposure": "Partial",
+        "sky_openness": "open",
+        "shading_source": "tree",
+        "key_observations": [
+          "The street is lined with trees providing partial shade.",
+          "There are buildings on either side of the street.",
+          "The sky is mostly clear with some clouds, allowing for partial sunlight to reach the street."
+        ],
+        "reasoning": "The street is partially shaded by trees, and the sky is mostly clear with some clouds, allowing for partial sunlight to reach the street. The walking path is not directly exposed to the sun, but there is some direct sunlight reaching the street."
+      }
+    }
+  }
+]
